@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <LangVersion>10</LangVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Authors>TheWover</Authors>
+        <Description>Dynamically invoke arbitrary unmanaged code from managed code without P/Invoke.</Description>
+        <AssemblyName>DInvoke.DynamicInvoke</AssemblyName>
+        <RootNamespace>DInvoke.DynamicInvoke</RootNamespace>
+        <PackageVersion>1.0.4</PackageVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DInvoke.Data\DInvoke.Data.csproj" />
+    </ItemGroup>
+
+</Project>

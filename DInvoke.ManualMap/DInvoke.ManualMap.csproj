@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <LangVersion>10</LangVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Authors>TheWover</Authors>
+        <Description>Manually map PE modules from on disk or in memory.</Description>
+        <PackageVersion>1.0.4</PackageVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DInvoke.Data\DInvoke.Data.csproj" />
+      <ProjectReference Include="..\DInvoke.DynamicInvoke\DInvoke.DynamicInvoke.csproj" />
+    </ItemGroup>
+
+</Project>
