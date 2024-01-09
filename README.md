@@ -1,6 +1,6 @@
 # D/Invoke
 
-Fork of [D/Invoke by TheWover](https://github.com/TheWover/DInvoke), but refactored to .NET Standard 2.0 and split into individual [NuGet packages](https://nuget.code-offensive.net/?q=DInvoke).
+Fork of [D/Invoke by TheWover](https://github.com/TheWover/DInvoke), but refactored to .NET Standard 2.0 and split into individual NuGet packages.
 
 ## Why?
 
