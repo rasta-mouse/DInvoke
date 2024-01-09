@@ -6,11 +6,11 @@
         <Nullable>disable</Nullable>
         <LangVersion>12</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Authors>TheWover</Authors>
+        <Authors>TheWover, RastaMouse</Authors>
         <Description>Dynamically invoke arbitrary unmanaged code from managed code without P/Invoke.</Description>
         <AssemblyName>DInvoke.DynamicInvoke</AssemblyName>
         <RootNamespace>DInvoke.DynamicInvoke</RootNamespace>
-        <PackageVersion>1.0.5</PackageVersion>
+        <PackageVersion>1.0.6</PackageVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
