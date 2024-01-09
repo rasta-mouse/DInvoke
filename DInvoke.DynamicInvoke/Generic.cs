@@ -16,7 +16,7 @@ public static class Generic
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate IntPtr ReadGs();
 
-    private static byte[] _x64SyscallStub =
+    private static readonly byte[] X64SyscallStub =
     [
         0x49, 0x89, 0xCA,                // mov r10, rcx
         0xB8, 0x00, 0x00, 0x00, 0x00,    // mov eax, ssn
@@ -35,10 +35,10 @@ public static class Generic
     /// <param name="canLoadFromDisk">Whether the DLL may be loaded from disk if it is not already loaded. Default is false.</param>
     /// <param name="resolveForwards">Whether or not to resolve export forwards. Default is true.</param>
     /// <returns>Object returned by the function. Must be unmarshalled by the caller.</returns>
-    public static object DynamicApiInvoke(string dllName, string functionName, Type functionDelegateType, ref object[] parameters, bool canLoadFromDisk = false, bool resolveForwards = true)
+    public static T DynamicApiInvoke<T>(string dllName, string functionName, Type functionDelegateType, ref object[] parameters, bool canLoadFromDisk = false, bool resolveForwards = true)
     {
         var pFunction = GetLibraryAddress(dllName, functionName, canLoadFromDisk, resolveForwards);
-        return DynamicFunctionInvoke(pFunction, functionDelegateType, ref parameters);
+        return DynamicFunctionInvoke<T>(pFunction, functionDelegateType, ref parameters);
     }
 
     /// <summary>
@@ -49,13 +49,13 @@ public static class Generic
     /// <param name="functionDelegateType">Prototype for the function, represented as a Delegate object.</param>
     /// <param name="parameters">Arbitrary set of parameters to pass to the function. Can be modified if function uses call by reference.</param>
     /// <returns>Object returned by the function. Must be unmarshalled by the caller.</returns>
-    public static object DynamicFunctionInvoke(IntPtr functionPointer, Type functionDelegateType, ref object[] parameters)
+    public static T DynamicFunctionInvoke<T>(IntPtr functionPointer, Type functionDelegateType, ref object[] parameters)
     {
         var funcDelegate = Marshal.GetDelegateForFunctionPointer(functionPointer, functionDelegateType);
-        return funcDelegate.DynamicInvoke(parameters);
+        return (T)funcDelegate.DynamicInvoke(parameters);
     }
 
-    public static object DynamicAsmInvoke(byte[] asmStub, Type functionDelegateType, ref object[] parameters)
+    public static T DynamicAsmInvoke<T>(byte[] asmStub, Type functionDelegateType, ref object[] parameters)
     {
         unsafe
         {
@@ -67,7 +67,7 @@ public static class Generic
                 var oldProtect = Native.NtProtectVirtualMemory(new IntPtr(-1), ref ptr,
                     ref size, Data.Win32.WinNT.PAGE_EXECUTE_READWRITE);
 
-                var result = DynamicFunctionInvoke(ptr, functionDelegateType, ref parameters);
+                var result = DynamicFunctionInvoke<T>(ptr, functionDelegateType, ref parameters);
 
                 Native.NtProtectVirtualMemory(new IntPtr(-1), ref ptr,
                     ref size, oldProtect);
@@ -255,7 +255,7 @@ public static class Generic
 
         var parameters = Array.Empty<object>();
         
-        return (IntPtr)DynamicAsmInvoke(
+        return DynamicAsmInvoke<IntPtr>(
             stub,
             typeof(ReadGs),
             ref parameters);
@@ -350,7 +350,7 @@ public static class Generic
                 var export = GetExportAddress(dte.DllBase, functionName);
                 var ssn = Marshal.ReadByte(export + 4);
 
-                var stub = _x64SyscallStub;
+                var stub = X64SyscallStub;
                 stub[4] = ssn;
 
                 return stub;
@@ -399,7 +399,7 @@ public static class Generic
                 var export = GetExportAddress(dte.DllBase, hashedFunctionName, key);
                 var ssn = Marshal.ReadByte(export + 4);
 
-                var stub = _x64SyscallStub;
+                var stub = X64SyscallStub;
                 stub[4] = ssn;
 
                 return stub;
@@ -863,13 +863,13 @@ public static class Generic
     /// <param name="parameters">Arbitrary set of parameters to pass to the function. Can be modified if function uses call by reference.</param>
     /// <param name="callEntry">Specify whether to invoke the module's entry point.</param>
     /// <returns>void</returns>
-    public static object CallMappedDLLModuleExport(Data.PE.PE_META_DATA peInfo, IntPtr moduleMemoryBase, string exportName, Type functionDelegateType, object[] parameters, bool callEntry = true)
+    public static T CallMappedDLLModuleExport<T>(Data.PE.PE_META_DATA peInfo, IntPtr moduleMemoryBase, string exportName, Type functionDelegateType, object[] parameters, bool callEntry = true)
     {
         if (callEntry)
             CallMappedDLLModule(peInfo, moduleMemoryBase);
 
         var pFunc = GetExportAddress(moduleMemoryBase, exportName);
-        return DynamicFunctionInvoke(pFunc, functionDelegateType, ref parameters);
+        return DynamicFunctionInvoke<T>(pFunc, functionDelegateType, ref parameters);
     }
 
     /// <summary>
@@ -883,13 +883,13 @@ public static class Generic
     /// <param name="parameters">Arbitrary set of parameters to pass to the function. Can be modified if function uses call by reference.</param>
     /// <param name="callEntry">Specify whether to invoke the module's entry point.</param>
     /// <returns>void</returns>
-    public static object CallMappedDLLModuleExport(Data.PE.PE_META_DATA peInfo, IntPtr moduleMemoryBase, short ordinal, Type functionDelegateType, object[] parameters, bool callEntry = true)
+    public static T CallMappedDLLModuleExport<T>(Data.PE.PE_META_DATA peInfo, IntPtr moduleMemoryBase, short ordinal, Type functionDelegateType, object[] parameters, bool callEntry = true)
     {
         if (callEntry)
             CallMappedDLLModule(peInfo, moduleMemoryBase);
 
         var pFunc = GetExportAddress(moduleMemoryBase, ordinal);
-        return DynamicFunctionInvoke(pFunc, functionDelegateType, ref parameters);
+        return DynamicFunctionInvoke<T>(pFunc, functionDelegateType, ref parameters);
     }
 
     /// <summary>
@@ -904,12 +904,12 @@ public static class Generic
     /// <param name="parameters">Arbitrary set of parameters to pass to the function. Can be modified if function uses call by reference.</param>
     /// <param name="callEntry">Specify whether to invoke the module's entry point.</param>
     /// <returns>void</returns>
-    public static object CallMappedDLLModuleExport(Data.PE.PE_META_DATA peInfo, IntPtr moduleMemoryBase, string functionHash, long key, Type functionDelegateType, object[] parameters, bool callEntry = true)
+    public static T CallMappedDLLModuleExport<T>(Data.PE.PE_META_DATA peInfo, IntPtr moduleMemoryBase, string functionHash, long key, Type functionDelegateType, object[] parameters, bool callEntry = true)
     {
         if (callEntry)
             CallMappedDLLModule(peInfo, moduleMemoryBase);
 
         var pFunc = GetExportAddress(moduleMemoryBase, functionHash, key);
-        return DynamicFunctionInvoke(pFunc, functionDelegateType, ref parameters);
+        return DynamicFunctionInvoke<T>(pFunc, functionDelegateType, ref parameters);
     }
 }

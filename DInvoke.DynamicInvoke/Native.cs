@@ -2,6 +2,7 @@
 // Project: SharpSploit (https://github.com/cobbr/SharpSploit)
 // License: BSD 3-Clause
 
+using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
 
 namespace DInvoke.DynamicInvoke;
@@ -11,107 +12,130 @@ namespace DInvoke.DynamicInvoke;
 /// </summary>
 public static class Native
 {
-    public static Data.Native.NTSTATUS NtCreateThreadEx(ref IntPtr threadHandle, Data.Win32.WinNT.ACCESS_MASK desiredAccess, IntPtr objectAttributes, IntPtr processHandle, IntPtr startAddress, IntPtr parameter, bool createSuspended, int stackZeroBits, int sizeOfStack, int maximumStackSize, IntPtr attributeList)
+    private const string NTDLL = "ntdll.dll";
+    
+    public static Data.Native.NTSTATUS NtCreateThreadEx(ref IntPtr threadHandle,
+        Data.Win32.WinNT.ACCESS_MASK desiredAccess, IntPtr objectAttributes, IntPtr processHandle, IntPtr startAddress,
+        IntPtr parameter, bool createSuspended, int stackZeroBits, int sizeOfStack, int maximumStackSize,
+        IntPtr attributeList)
     {
-        object[] funcargs =
+        object[] parameters =
         [
-            threadHandle, desiredAccess, objectAttributes, processHandle, startAddress, parameter, createSuspended, stackZeroBits,
+            threadHandle, desiredAccess, objectAttributes, processHandle, startAddress, parameter, createSuspended,
+            stackZeroBits,
             sizeOfStack, maximumStackSize, attributeList
         ];
 
-        var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtCreateThreadEx",
-            typeof(Delegates.NtCreateThreadEx), ref funcargs);
+        var status = Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            NTDLL,
+            "NtCreateThreadEx",
+            typeof(NtCreateThreadExDelegate),
+            ref parameters);
 
-        threadHandle = (IntPtr)funcargs[0];
-        return retValue;
+        threadHandle = (IntPtr)parameters[0];
+        return status;
     }
 
-    public static Data.Native.NTSTATUS NtCreateSection(ref IntPtr sectionHandle, uint desiredAccess, IntPtr objectAttributes, ref ulong maximumSize, uint sectionPageProtection, uint allocationAttributes, IntPtr fileHandle)
+    public static Data.Native.NTSTATUS NtCreateSection(ref IntPtr sectionHandle, uint desiredAccess,
+        IntPtr objectAttributes, ref ulong maximumSize, uint sectionPageProtection, uint allocationAttributes,
+        IntPtr fileHandle)
     {
-        object[] funcargs =
+        object[] parameters =
         [
-            sectionHandle, desiredAccess, objectAttributes, maximumSize, sectionPageProtection, allocationAttributes, fileHandle
+            sectionHandle, desiredAccess, objectAttributes, maximumSize,
+            sectionPageProtection, allocationAttributes, fileHandle
         ];
 
-        var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtCreateSection", typeof(Delegates.NtCreateSection), ref funcargs);
-            
-        if (retValue != Data.Native.NTSTATUS.Success)
-            throw new InvalidOperationException("Unable to create section, " + retValue);
+        var status = Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            NTDLL,
+            "NtCreateSection",
+            typeof(NtCreateSectionDelegate),
+            ref parameters);
 
-        sectionHandle = (IntPtr) funcargs[0];
-        maximumSize = (ulong) funcargs[3];
+        sectionHandle = (IntPtr)parameters[0];
+        maximumSize = (ulong)parameters[3];
 
-        return retValue;
+        return status;
     }
 
     public static Data.Native.NTSTATUS NtUnmapViewOfSection(IntPtr hProc, IntPtr baseAddr)
     {
-        object[] funcargs =
-        [
-            hProc, baseAddr
-        ];
+        object[] parameters = [hProc, baseAddr];
 
-        var result = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtUnmapViewOfSection", typeof(Delegates.NtUnmapViewOfSection), ref funcargs);
-
-        return result;
+        return Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            NTDLL, 
+            "NtUnmapViewOfSection",
+            typeof(NtUnmapViewOfSectionDelegate),
+            ref parameters);
     }
 
-    public static Data.Native.NTSTATUS NtMapViewOfSection(IntPtr sectionHandle, IntPtr processHandle, ref IntPtr baseAddress, IntPtr zeroBits, IntPtr commitSize, IntPtr sectionOffset, ref ulong viewSize, uint inheritDisposition, uint allocationType, uint win32Protect)
+    public static Data.Native.NTSTATUS NtMapViewOfSection(IntPtr sectionHandle, IntPtr processHandle,
+        ref IntPtr baseAddress, IntPtr zeroBits, IntPtr commitSize, IntPtr sectionOffset, ref ulong viewSize,
+        uint inheritDisposition, uint allocationType, uint win32Protect)
     {
-        object[] funcargs =
+        object[] parameters =
         [
-            sectionHandle, processHandle, baseAddress, zeroBits, commitSize, sectionOffset, viewSize, inheritDisposition, allocationType,
-            win32Protect
+            sectionHandle, processHandle, baseAddress, zeroBits, commitSize, sectionOffset, viewSize,
+            inheritDisposition, allocationType, win32Protect
         ];
 
-        var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtMapViewOfSection", typeof(Delegates.NtMapViewOfSection), ref funcargs);
-            
-        if (retValue != Data.Native.NTSTATUS.Success && retValue != Data.Native.NTSTATUS.ImageNotAtBase)
-            throw new InvalidOperationException("Unable to map view of section, " + retValue);
+        var status = Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            "ntdll.dll", 
+            "NtMapViewOfSection",
+            typeof(NtMapViewOfSectionDelegate), 
+            ref parameters);
 
-        baseAddress = (IntPtr) funcargs[2];
-        viewSize = (ulong) funcargs[6];
+        baseAddress = (IntPtr)parameters[2];
+        viewSize = (ulong)parameters[6];
 
-        return retValue;
+        return status;
     }
 
-    public static void RtlInitUnicodeString(ref Data.Native.UNICODE_STRING destinationString, [MarshalAs(UnmanagedType.LPWStr)] string sourceString)
+    public static void RtlInitUnicodeString(ref Data.Native.UNICODE_STRING destinationString,
+        [MarshalAs(UnmanagedType.LPWStr)] string sourceString)
     {
-        object[] funcargs =
-        [
-            destinationString, sourceString
-        ];
+        object[] parameters = [destinationString, sourceString];
 
-        Generic.DynamicApiInvoke("ntdll.dll", "RtlInitUnicodeString", typeof(Delegates.RtlInitUnicodeString), ref funcargs);
+        Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            NTDLL, 
+            "RtlInitUnicodeString",
+            typeof(RtlInitUnicodeStringDelegate),
+            ref parameters);
 
-        destinationString = (Data.Native.UNICODE_STRING)funcargs[0];
+        destinationString = (Data.Native.UNICODE_STRING)parameters[0];
     }
 
-    public static Data.Native.NTSTATUS LdrLoadDll(IntPtr pathToFile, uint dwFlags, ref Data.Native.UNICODE_STRING moduleFileName, ref IntPtr moduleHandle)
+    public static Data.Native.NTSTATUS LdrLoadDll(IntPtr pathToFile, uint dwFlags,
+        ref Data.Native.UNICODE_STRING moduleFileName, ref IntPtr moduleHandle)
     {
-        object[] funcargs =
+        object[] parameters =
         [
             pathToFile, dwFlags, moduleFileName, moduleHandle
         ];
 
-        var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "LdrLoadDll", typeof(Delegates.LdrLoadDll), ref funcargs);
+        var status = Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            NTDLL, 
+            "LdrLoadDll",
+            typeof(LdrLoadDllDelegate), 
+            ref parameters);
 
-        moduleHandle = (IntPtr)funcargs[3];
-
-        return retValue;
+        moduleHandle = (IntPtr)parameters[3];
+        return status;
     }
 
     public static void RtlZeroMemory(IntPtr destination, int length)
     {
-        object[] funcargs =
-        [
-            destination, length
-        ];
+        object[] parameters = [destination, length];
 
-        Generic.DynamicApiInvoke("ntdll.dll", "RtlZeroMemory", typeof(Delegates.RtlZeroMemory), ref funcargs);
+        _ = Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            NTDLL, 
+            "RtlZeroMemory",
+            typeof(RtlZeroMemoryDelegate),
+            ref parameters);
     }
 
-    public static Data.Native.NTSTATUS NtQueryInformationProcess(IntPtr hProcess, Data.Native.PROCESSINFOCLASS processInfoClass, out IntPtr pProcInfo)
+    public static Data.Native.NTSTATUS NtQueryInformationProcess(IntPtr hProcess,
+        Data.Native.PROCESSINFOCLASS processInfoClass, out IntPtr pProcInfo)
     {
         int processInformationLength;
         uint retLen = 0;
@@ -123,7 +147,7 @@ public static class Native
                 RtlZeroMemory(pProcInfo, IntPtr.Size);
                 processInformationLength = IntPtr.Size;
                 break;
-                
+
             case Data.Native.PROCESSINFOCLASS.ProcessBasicInformation:
                 var pbi = new Data.Native.PROCESS_BASIC_INFORMATION();
                 pProcInfo = Marshal.AllocHGlobal(Marshal.SizeOf(pbi));
@@ -131,326 +155,281 @@ public static class Native
                 Marshal.StructureToPtr(pbi, pProcInfo, true);
                 processInformationLength = Marshal.SizeOf(pbi);
                 break;
-                
+
             default:
                 throw new InvalidOperationException($"Invalid ProcessInfoClass: {processInfoClass}");
         }
 
-        object[] funcargs =
+        object[] parameters =
         [
             hProcess, processInfoClass, pProcInfo, processInformationLength, retLen
         ];
 
-        var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtQueryInformationProcess", typeof(Delegates.NtQueryInformationProcess), ref funcargs);
-            
-        if (retValue != Data.Native.NTSTATUS.Success)
-            throw new UnauthorizedAccessException("Access is denied.");
+        var status = Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            NTDLL, 
+            "NtQueryInformationProcess",
+            typeof(NtQueryInformationProcessDelegate), 
+            ref parameters);
 
-        pProcInfo = (IntPtr)funcargs[2];
-
-        return retValue;
+        pProcInfo = (IntPtr)parameters[2];
+        return status;
     }
 
     public static bool NtQueryInformationProcessWow64Information(IntPtr hProcess)
     {
-        var retValue = NtQueryInformationProcess(hProcess, Data.Native.PROCESSINFOCLASS.ProcessWow64Information, out var pProcInfo);
-            
-        if (retValue != Data.Native.NTSTATUS.Success)
-            throw new UnauthorizedAccessException("Access is denied.");
+        _ = NtQueryInformationProcess(
+            hProcess,
+            Data.Native.PROCESSINFOCLASS.ProcessWow64Information,
+            out var pProcInfo);
 
         return Marshal.ReadIntPtr(pProcInfo) != IntPtr.Zero;
     }
 
     public static Data.Native.PROCESS_BASIC_INFORMATION NtQueryInformationProcessBasicInformation(IntPtr hProcess)
     {
-        var retValue = NtQueryInformationProcess(hProcess, Data.Native.PROCESSINFOCLASS.ProcessBasicInformation, out var pProcInfo);
-            
-        if (retValue != Data.Native.NTSTATUS.Success)
-            throw new UnauthorizedAccessException("Access is denied.");
+        _ = NtQueryInformationProcess(
+            hProcess, 
+            Data.Native.PROCESSINFOCLASS.ProcessBasicInformation,
+            out var pProcInfo);
 
-        return (Data.Native.PROCESS_BASIC_INFORMATION)Marshal.PtrToStructure(pProcInfo, typeof(Data.Native.PROCESS_BASIC_INFORMATION));
+        return Marshal.PtrToStructure<Data.Native.PROCESS_BASIC_INFORMATION>(pProcInfo);
     }
 
-    public static IntPtr NtAllocateVirtualMemory(IntPtr processHandle, ref IntPtr baseAddress, IntPtr zeroBits, ref IntPtr regionSize, uint allocationType, uint protect)
+    public static IntPtr NtAllocateVirtualMemory(IntPtr processHandle, ref IntPtr baseAddress, IntPtr zeroBits,
+        ref IntPtr regionSize, uint allocationType, uint protect)
     {
-        object[] funcargs =
+        object[] parameters =
         [
             processHandle, baseAddress, zeroBits, regionSize, allocationType, protect
         ];
 
-        var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtAllocateVirtualMemory", typeof(Delegates.NtAllocateVirtualMemory), ref funcargs);
-            
-        switch (retValue)
-        {
-            case Data.Native.NTSTATUS.AccessDenied:
-                throw new UnauthorizedAccessException("Access is denied.");
-            case Data.Native.NTSTATUS.AlreadyCommitted:
-                throw new InvalidOperationException("The specified address range is already committed.");
-            case Data.Native.NTSTATUS.CommitmentLimit:
-                throw new InvalidOperationException("Your system is low on virtual memory.");
-            case Data.Native.NTSTATUS.ConflictingAddresses:
-                throw new InvalidOperationException("The specified address range conflicts with the address space.");
-            case Data.Native.NTSTATUS.InsufficientResources:
-                throw new InvalidOperationException("Insufficient system resources exist to complete the API call.");
-            case Data.Native.NTSTATUS.InvalidHandle:
-                throw new InvalidOperationException("An invalid HANDLE was specified.");
-            case Data.Native.NTSTATUS.InvalidPageProtection:
-                throw new InvalidOperationException("The specified page protection was not valid.");
-            case Data.Native.NTSTATUS.NoMemory:
-                throw new InvalidOperationException("Not enough virtual memory or paging file quota is available to complete the specified operation.");
-            case Data.Native.NTSTATUS.ObjectTypeMismatch:
-                throw new InvalidOperationException("There is a mismatch between the type of object that is required by the requested operation and the type of object that is specified in the request.");
-        }
+        _ = Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            NTDLL,
+            "NtAllocateVirtualMemory",
+            typeof(NtAllocateVirtualMemoryDelegate),
+            ref parameters);
 
-        if (retValue != Data.Native.NTSTATUS.Success)
-            throw new InvalidOperationException("An attempt was made to duplicate an object handle into or out of an exiting process.");
-
-        baseAddress = (IntPtr)funcargs[1];
+        baseAddress = (IntPtr)parameters[1];
         return baseAddress;
     }
 
-    public static void NtFreeVirtualMemory(IntPtr processHandle, ref IntPtr baseAddress, ref IntPtr regionSize, uint freeType)
+    public static void NtFreeVirtualMemory(IntPtr processHandle, ref IntPtr baseAddress, ref IntPtr regionSize,
+        uint freeType)
     {
-        object[] funcargs =
-        [
-            processHandle, baseAddress, regionSize, freeType
-        ];
+        object[] parameters = [processHandle, baseAddress, regionSize, freeType];
 
-        var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtFreeVirtualMemory", typeof(Delegates.NtFreeVirtualMemory), ref funcargs);
-            
-        switch (retValue)
-        {
-            case Data.Native.NTSTATUS.AccessDenied:
-                throw new UnauthorizedAccessException("Access is denied.");
-            case Data.Native.NTSTATUS.InvalidHandle:
-                throw new InvalidOperationException("An invalid HANDLE was specified.");
-        }
-
-        if (retValue != Data.Native.NTSTATUS.Success)
-            throw new InvalidOperationException("There is a mismatch between the type of object that is required by the requested operation and the type of object that is specified in the request.");
+        _ = Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            NTDLL, 
+            "NtFreeVirtualMemory",
+            typeof(NtFreeVirtualMemoryDelegate),
+            ref parameters);
     }
-        
-    public static uint NtProtectVirtualMemory(IntPtr processHandle, ref IntPtr baseAddress, ref IntPtr regionSize, uint newProtect)
+
+    public static uint NtProtectVirtualMemory(IntPtr processHandle, ref IntPtr baseAddress, ref IntPtr regionSize,
+        uint newProtect)
     {
-        uint oldProtect = 0;
-        object[] funcargs =
-        [
-            processHandle, baseAddress, regionSize, newProtect, oldProtect
-        ];
+        object[] parameters = [processHandle, baseAddress, regionSize, newProtect, (uint)0];
 
-        var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtProtectVirtualMemory", typeof(Delegates.NtProtectVirtualMemory), ref funcargs);
-            
-        if (retValue != Data.Native.NTSTATUS.Success)
-            throw new InvalidOperationException("Failed to change memory protection, " + retValue);
+        _ = Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            NTDLL, 
+            "NtProtectVirtualMemory",
+            typeof(NtProtectVirtualMemoryDelegate),
+            ref parameters);
 
-        oldProtect = (uint)funcargs[4];
-        return oldProtect;
+        return (uint)parameters[4];
     }
 
     public static uint NtWriteVirtualMemory(IntPtr processHandle, IntPtr baseAddress, IntPtr buffer, uint bufferLength)
     {
-        uint bytesWritten = 0;
-        object[] funcargs =
-        [
-            processHandle, baseAddress, buffer, bufferLength, bytesWritten
-        ];
+        object[] parameters = [processHandle, baseAddress, buffer, bufferLength, (uint)0];
 
-        var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtWriteVirtualMemory", typeof(Delegates.NtWriteVirtualMemory), ref funcargs);
-            
-        if (retValue != Data.Native.NTSTATUS.Success)
-            throw new InvalidOperationException("Failed to write memory, " + retValue);
+        _ = Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            NTDLL, 
+            "NtWriteVirtualMemory",
+            typeof(NtWriteVirtualMemoryDelegate),
+            ref parameters);
 
-        bytesWritten = (uint)funcargs[4];
-        return bytesWritten;
+        return (uint)parameters[4];
     }
 
-    public static IntPtr LdrGetProcedureAddress(IntPtr hModule, IntPtr functionName, IntPtr ordinal, ref IntPtr functionAddress)
+    public static IntPtr LdrGetProcedureAddress(IntPtr hModule, IntPtr functionName, IntPtr ordinal,
+        ref IntPtr functionAddress)
     {
-        object[] funcargs =
-        [
-            hModule, functionName, ordinal, functionAddress
-        ];
+        object[] parameters = [hModule, functionName, ordinal, functionAddress];
 
-        var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "LdrGetProcedureAddress", typeof(Delegates.LdrGetProcedureAddress), ref funcargs);
-            
-        if (retValue != Data.Native.NTSTATUS.Success)
-            throw new InvalidOperationException("Failed get procedure address, " + retValue);
+        _ = Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            NTDLL, 
+            "LdrGetProcedureAddress",
+            typeof(LdrGetProcedureAddressDelegate),
+            ref parameters);
 
-        functionAddress = (IntPtr)funcargs[3];
+        functionAddress = (IntPtr)parameters[3];
         return functionAddress;
     }
 
     public static void RtlGetVersion(ref Data.Native.OSVERSIONINFOEX versionInformation)
     {
-        object[] funcargs =
-        [
-            versionInformation
-        ];
+        object[] parameters = [versionInformation];
 
-        var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "RtlGetVersion", typeof(Delegates.RtlGetVersion), ref funcargs);
-            
-        if (retValue != Data.Native.NTSTATUS.Success)
-            throw new InvalidOperationException("Failed get procedure address, " + retValue);
+        _ = Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            NTDLL, 
+            "RtlGetVersion",
+            typeof(RtlGetVersionDelegate),
+            ref parameters);
 
-        versionInformation = (Data.Native.OSVERSIONINFOEX)funcargs[0];
+        versionInformation = (Data.Native.OSVERSIONINFOEX)parameters[0];
     }
 
-    public static IntPtr NtOpenFile(ref IntPtr fileHandle, Data.Win32.Kernel32.FileAccessFlags desiredAccess, ref Data.Native.OBJECT_ATTRIBUTES objectAttributes, ref Data.Native.IO_STATUS_BLOCK ioStatusBlock, Data.Win32.Kernel32.FileShareFlags shareAccess, Data.Win32.Kernel32.FileOpenFlags openOptions)
+    public static IntPtr NtOpenFile(ref IntPtr fileHandle, Data.Win32.Kernel32.FileAccessFlags desiredAccess,
+        ref Data.Native.OBJECT_ATTRIBUTES objectAttributes, ref Data.Native.IO_STATUS_BLOCK ioStatusBlock,
+        Data.Win32.Kernel32.FileShareFlags shareAccess, Data.Win32.Kernel32.FileOpenFlags openOptions)
     {
-        object[] funcargs =
+        object[] parameters =
         [
             fileHandle, desiredAccess, objectAttributes, ioStatusBlock, shareAccess, openOptions
         ];
 
-        var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke(@"ntdll.dll", @"NtOpenFile", typeof(Delegates.NtOpenFile), ref funcargs);
-            
-        if (retValue != Data.Native.NTSTATUS.Success)
-            throw new InvalidOperationException("Failed to open file, " + retValue);
+        _ = Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+            @"ntdll.dll",
+            @"NtOpenFile",
+            typeof(NtOpenFileDelegate),
+            ref parameters);
 
-        fileHandle = (IntPtr)funcargs[0];
+        fileHandle = (IntPtr)parameters[0];
         return fileHandle;
     }
 
-    /// <summary>
-    /// Holds delegates for API calls in the NT Layer.
-    /// Must be public so that they may be used with SharpSploit.Execution.DynamicInvoke.Generic.DynamicFunctionInvoke
-    /// </summary>
-    /// <example>
-    /// 
-    /// // These delegates may also be used directly.
-    ///
-    /// // Get a pointer to the NtCreateThreadEx function.
-    /// IntPtr pFunction = Execution.DynamicInvoke.Generic.GetLibraryAddress(@"ntdll.dll", "NtCreateThreadEx");
-    /// 
-    /// //  Create an instance of a NtCreateThreadEx delegate from our function pointer.
-    /// DELEGATES.NtCreateThreadEx createThread = (NATIVE_DELEGATES.NtCreateThreadEx)Marshal.GetDelegateForFunctionPointer(
-    ///    pFunction, typeof(NATIVE_DELEGATES.NtCreateThreadEx));
-    ///
-    /// //  Invoke NtCreateThreadEx using the delegate
-    /// createThread(ref threadHandle, Data.Win32.WinNT.ACCESS_MASK.SPECIFIC_RIGHTS_ALL | Data.Win32.WinNT.ACCESS_MASK.STANDARD_RIGHTS_ALL, IntPtr.Zero,
-    ///     procHandle, startAddress, IntPtr.Zero, Data.Native.NT_CREATION_FLAGS.HIDE_FROM_DEBUGGER, 0, 0, 0, IntPtr.Zero);
-    /// 
-    /// </example>
-    private struct Delegates
+    public static void NtClose(IntPtr handle)
     {
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate Data.Native.NTSTATUS NtCreateThreadEx(
-            out IntPtr threadHandle,
-            Data.Win32.WinNT.ACCESS_MASK desiredAccess,
-            IntPtr objectAttributes,
-            IntPtr processHandle,
-            IntPtr startAddress,
-            IntPtr parameter,
-            bool createSuspended,
-            int stackZeroBits,
-            int sizeOfStack,
-            int maximumStackSize,
-            IntPtr attributeList);
+        object[] parameters = [handle];
 
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate Data.Native.NTSTATUS NtCreateSection(
-            ref IntPtr sectionHandle,
-            uint desiredAccess,
-            IntPtr objectAttributes,
-            ref ulong maximumSize,
-            uint sectionPageProtection,
-            uint allocationAttributes,
-            IntPtr fileHandle);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate Data.Native.NTSTATUS NtUnmapViewOfSection(
-            IntPtr hProc,
-            IntPtr baseAddr);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate Data.Native.NTSTATUS NtMapViewOfSection(
-            IntPtr sectionHandle,
-            IntPtr processHandle,
-            out IntPtr baseAddress,
-            IntPtr zeroBits,
-            IntPtr commitSize,
-            IntPtr sectionOffset,
-            out ulong viewSize,
-            uint inheritDisposition,
-            uint allocationType,
-            uint win32Protect);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate uint LdrLoadDll(
-            IntPtr pathToFile,
-            uint dwFlags,
-            ref Data.Native.UNICODE_STRING moduleFileName,
-            ref IntPtr moduleHandle);
-            
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void RtlInitUnicodeString(
-            ref Data.Native.UNICODE_STRING destinationString,
-            [MarshalAs(UnmanagedType.LPWStr)]
-            string sourceString);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void RtlZeroMemory(
-            IntPtr destination,
-            int length);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate uint NtQueryInformationProcess(
-            IntPtr processHandle,
-            Data.Native.PROCESSINFOCLASS processInformationClass,
-            IntPtr processInformation,
-            int processInformationLength,
-            ref uint returnLength);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate uint NtAllocateVirtualMemory(
-            IntPtr processHandle,
-            ref IntPtr baseAddress,
-            IntPtr zeroBits,
-            ref IntPtr regionSize,
-            uint allocationType,
-            uint protect);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate uint NtFreeVirtualMemory(
-            IntPtr processHandle,
-            ref IntPtr baseAddress,
-            ref IntPtr regionSize,
-            uint freeType);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate uint NtProtectVirtualMemory(
-            IntPtr processHandle,
-            ref IntPtr baseAddress,
-            ref IntPtr regionSize,
-            uint newProtect,
-            ref uint oldProtect);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate uint NtWriteVirtualMemory(
-            IntPtr processHandle,
-            IntPtr baseAddress,
-            IntPtr buffer,
-            uint bufferLength,
-            ref uint bytesWritten);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate uint LdrGetProcedureAddress(
-            IntPtr hModule,
-            IntPtr functionName,
-            IntPtr ordinal,
-            ref IntPtr functionAddress);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate uint RtlGetVersion(
-            ref Data.Native.OSVERSIONINFOEX versionInformation);
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate uint NtOpenFile(
-            ref IntPtr fileHandle,
-            Data.Win32.Kernel32.FileAccessFlags accessFlags,
-            ref Data.Native.OBJECT_ATTRIBUTES objectAttributes,
-            ref Data.Native.IO_STATUS_BLOCK ioStatusBlock,
-            Data.Win32.Kernel32.FileShareFlags shareAccess,
-            Data.Win32.Kernel32.FileOpenFlags openOptions);
+        _ = Generic.DynamicApiInvoke<uint>(
+            NTDLL,
+            "NtClose",
+            typeof(NtCloseDelegate),
+            ref parameters);
     }
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate uint NtCreateThreadExDelegate(
+        out IntPtr threadHandle,
+        Data.Win32.WinNT.ACCESS_MASK desiredAccess,
+        IntPtr objectAttributes,
+        IntPtr processHandle,
+        IntPtr startAddress,
+        IntPtr parameter,
+        bool createSuspended,
+        int stackZeroBits,
+        int sizeOfStack,
+        int maximumStackSize,
+        IntPtr attributeList);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate uint NtCreateSectionDelegate(
+        ref IntPtr sectionHandle,
+        uint desiredAccess,
+        IntPtr objectAttributes,
+        ref ulong maximumSize,
+        uint sectionPageProtection,
+        uint allocationAttributes,
+        IntPtr fileHandle);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate uint NtUnmapViewOfSectionDelegate(
+        IntPtr hProc,
+        IntPtr baseAddr);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate uint NtMapViewOfSectionDelegate(
+        IntPtr sectionHandle,
+        IntPtr processHandle,
+        out IntPtr baseAddress,
+        IntPtr zeroBits,
+        IntPtr commitSize,
+        IntPtr sectionOffset,
+        out ulong viewSize,
+        uint inheritDisposition,
+        uint allocationType,
+        uint win32Protect);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate uint LdrLoadDllDelegate(
+        IntPtr pathToFile,
+        uint dwFlags,
+        ref Data.Native.UNICODE_STRING moduleFileName,
+        ref IntPtr moduleHandle);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate void RtlInitUnicodeStringDelegate(
+        ref Data.Native.UNICODE_STRING destinationString,
+        [MarshalAs(UnmanagedType.LPWStr)] string sourceString);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate void RtlZeroMemoryDelegate(
+        IntPtr destination,
+        int length);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate uint NtQueryInformationProcessDelegate(
+        IntPtr processHandle,
+        Data.Native.PROCESSINFOCLASS processInformationClass,
+        IntPtr processInformation,
+        int processInformationLength,
+        ref uint returnLength);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate uint NtAllocateVirtualMemoryDelegate(
+        IntPtr processHandle,
+        ref IntPtr baseAddress,
+        IntPtr zeroBits,
+        ref IntPtr regionSize,
+        uint allocationType,
+        uint protect);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate uint NtFreeVirtualMemoryDelegate(
+        IntPtr processHandle,
+        ref IntPtr baseAddress,
+        ref IntPtr regionSize,
+        uint freeType);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate uint NtProtectVirtualMemoryDelegate(
+        IntPtr processHandle,
+        ref IntPtr baseAddress,
+        ref IntPtr regionSize,
+        uint newProtect,
+        ref uint oldProtect);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate uint NtWriteVirtualMemoryDelegate(
+        IntPtr processHandle,
+        IntPtr baseAddress,
+        IntPtr buffer,
+        uint bufferLength,
+        ref uint bytesWritten);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate uint LdrGetProcedureAddressDelegate(
+        IntPtr hModule,
+        IntPtr functionName,
+        IntPtr ordinal,
+        ref IntPtr functionAddress);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate uint RtlGetVersionDelegate(
+        ref Data.Native.OSVERSIONINFOEX versionInformation);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate uint NtOpenFileDelegate(
+        ref IntPtr fileHandle,
+        Data.Win32.Kernel32.FileAccessFlags accessFlags,
+        ref Data.Native.OBJECT_ATTRIBUTES objectAttributes,
+        ref Data.Native.IO_STATUS_BLOCK ioStatusBlock,
+        Data.Win32.Kernel32.FileShareFlags shareAccess,
+        Data.Win32.Kernel32.FileOpenFlags openOptions);
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    private delegate uint NtCloseDelegate(
+        IntPtr handle);
 }

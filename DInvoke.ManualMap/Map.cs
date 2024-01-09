@@ -77,7 +77,7 @@ public static class Map
             ModuleBase = pBaseAddress
         };
 
-        Win32.CloseHandle(hFile);
+        Native.NtClose(hFile);
 
         return secMapObject;
     }
