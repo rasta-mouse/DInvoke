@@ -67,6 +67,19 @@ Use a tool such as [CSharpRepl](https://github.com/waf/CSharpRepl) to import `DI
 "9713035EC6AE7BB32303F84822AB80AA"
 ```
 
+Use `GetLoadedModuleAddress` to resolve the address of the DLL and `GetExportAddress` to resolve the address of the target function.
+
+```c#
+var hModule = DynamicInvoke.Generic.GetLoadedModuleAddress(
+    "9BC00C9AC691986FE3CEEDA6E12F9FB0", // ntdll.dll
+    key);
+
+var hPointer = DynamicInvoke.Generic.GetExportAddress(
+    hModule,
+    "9713035EC6AE7BB32303F84822AB80AA", // NtOpenProcess
+    key);
+```
+
 The rest of the steps are the same as above, but we call `DynamicFunctionInvoke` instead.
 
 ```c#
