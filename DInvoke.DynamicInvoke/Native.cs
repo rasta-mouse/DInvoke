@@ -14,10 +14,10 @@ public static class Native
     public static Data.Native.NTSTATUS NtCreateThreadEx(ref IntPtr threadHandle, Data.Win32.WinNT.ACCESS_MASK desiredAccess, IntPtr objectAttributes, IntPtr processHandle, IntPtr startAddress, IntPtr parameter, bool createSuspended, int stackZeroBits, int sizeOfStack, int maximumStackSize, IntPtr attributeList)
     {
         object[] funcargs =
-        {
+        [
             threadHandle, desiredAccess, objectAttributes, processHandle, startAddress, parameter, createSuspended, stackZeroBits,
             sizeOfStack, maximumStackSize, attributeList
-        };
+        ];
 
         var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtCreateThreadEx",
             typeof(Delegates.NtCreateThreadEx), ref funcargs);
@@ -29,9 +29,9 @@ public static class Native
     public static Data.Native.NTSTATUS NtCreateSection(ref IntPtr sectionHandle, uint desiredAccess, IntPtr objectAttributes, ref ulong maximumSize, uint sectionPageProtection, uint allocationAttributes, IntPtr fileHandle)
     {
         object[] funcargs =
-        {
+        [
             sectionHandle, desiredAccess, objectAttributes, maximumSize, sectionPageProtection, allocationAttributes, fileHandle
-        };
+        ];
 
         var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtCreateSection", typeof(Delegates.NtCreateSection), ref funcargs);
             
@@ -47,9 +47,9 @@ public static class Native
     public static Data.Native.NTSTATUS NtUnmapViewOfSection(IntPtr hProc, IntPtr baseAddr)
     {
         object[] funcargs =
-        {
+        [
             hProc, baseAddr
-        };
+        ];
 
         var result = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtUnmapViewOfSection", typeof(Delegates.NtUnmapViewOfSection), ref funcargs);
 
@@ -59,10 +59,10 @@ public static class Native
     public static Data.Native.NTSTATUS NtMapViewOfSection(IntPtr sectionHandle, IntPtr processHandle, ref IntPtr baseAddress, IntPtr zeroBits, IntPtr commitSize, IntPtr sectionOffset, ref ulong viewSize, uint inheritDisposition, uint allocationType, uint win32Protect)
     {
         object[] funcargs =
-        {
+        [
             sectionHandle, processHandle, baseAddress, zeroBits, commitSize, sectionOffset, viewSize, inheritDisposition, allocationType,
             win32Protect
-        };
+        ];
 
         var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtMapViewOfSection", typeof(Delegates.NtMapViewOfSection), ref funcargs);
             
@@ -78,9 +78,9 @@ public static class Native
     public static void RtlInitUnicodeString(ref Data.Native.UNICODE_STRING destinationString, [MarshalAs(UnmanagedType.LPWStr)] string sourceString)
     {
         object[] funcargs =
-        {
+        [
             destinationString, sourceString
-        };
+        ];
 
         Generic.DynamicApiInvoke("ntdll.dll", "RtlInitUnicodeString", typeof(Delegates.RtlInitUnicodeString), ref funcargs);
 
@@ -90,9 +90,9 @@ public static class Native
     public static Data.Native.NTSTATUS LdrLoadDll(IntPtr pathToFile, uint dwFlags, ref Data.Native.UNICODE_STRING moduleFileName, ref IntPtr moduleHandle)
     {
         object[] funcargs =
-        {
+        [
             pathToFile, dwFlags, moduleFileName, moduleHandle
-        };
+        ];
 
         var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "LdrLoadDll", typeof(Delegates.LdrLoadDll), ref funcargs);
 
@@ -104,9 +104,9 @@ public static class Native
     public static void RtlZeroMemory(IntPtr destination, int length)
     {
         object[] funcargs =
-        {
+        [
             destination, length
-        };
+        ];
 
         Generic.DynamicApiInvoke("ntdll.dll", "RtlZeroMemory", typeof(Delegates.RtlZeroMemory), ref funcargs);
     }
@@ -137,9 +137,9 @@ public static class Native
         }
 
         object[] funcargs =
-        {
+        [
             hProcess, processInfoClass, pProcInfo, processInformationLength, retLen
-        };
+        ];
 
         var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtQueryInformationProcess", typeof(Delegates.NtQueryInformationProcess), ref funcargs);
             
@@ -174,9 +174,9 @@ public static class Native
     public static IntPtr NtAllocateVirtualMemory(IntPtr processHandle, ref IntPtr baseAddress, IntPtr zeroBits, ref IntPtr regionSize, uint allocationType, uint protect)
     {
         object[] funcargs =
-        {
+        [
             processHandle, baseAddress, zeroBits, regionSize, allocationType, protect
-        };
+        ];
 
         var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtAllocateVirtualMemory", typeof(Delegates.NtAllocateVirtualMemory), ref funcargs);
             
@@ -212,9 +212,9 @@ public static class Native
     public static void NtFreeVirtualMemory(IntPtr processHandle, ref IntPtr baseAddress, ref IntPtr regionSize, uint freeType)
     {
         object[] funcargs =
-        {
+        [
             processHandle, baseAddress, regionSize, freeType
-        };
+        ];
 
         var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtFreeVirtualMemory", typeof(Delegates.NtFreeVirtualMemory), ref funcargs);
             
@@ -234,9 +234,9 @@ public static class Native
     {
         uint oldProtect = 0;
         object[] funcargs =
-        {
+        [
             processHandle, baseAddress, regionSize, newProtect, oldProtect
-        };
+        ];
 
         var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtProtectVirtualMemory", typeof(Delegates.NtProtectVirtualMemory), ref funcargs);
             
@@ -251,9 +251,9 @@ public static class Native
     {
         uint bytesWritten = 0;
         object[] funcargs =
-        {
+        [
             processHandle, baseAddress, buffer, bufferLength, bytesWritten
-        };
+        ];
 
         var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "NtWriteVirtualMemory", typeof(Delegates.NtWriteVirtualMemory), ref funcargs);
             
@@ -267,9 +267,9 @@ public static class Native
     public static IntPtr LdrGetProcedureAddress(IntPtr hModule, IntPtr functionName, IntPtr ordinal, ref IntPtr functionAddress)
     {
         object[] funcargs =
-        {
+        [
             hModule, functionName, ordinal, functionAddress
-        };
+        ];
 
         var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "LdrGetProcedureAddress", typeof(Delegates.LdrGetProcedureAddress), ref funcargs);
             
@@ -283,9 +283,9 @@ public static class Native
     public static void RtlGetVersion(ref Data.Native.OSVERSIONINFOEX versionInformation)
     {
         object[] funcargs =
-        {
+        [
             versionInformation
-        };
+        ];
 
         var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke("ntdll.dll", "RtlGetVersion", typeof(Delegates.RtlGetVersion), ref funcargs);
             
@@ -298,9 +298,9 @@ public static class Native
     public static IntPtr NtOpenFile(ref IntPtr fileHandle, Data.Win32.Kernel32.FileAccessFlags desiredAccess, ref Data.Native.OBJECT_ATTRIBUTES objectAttributes, ref Data.Native.IO_STATUS_BLOCK ioStatusBlock, Data.Win32.Kernel32.FileShareFlags shareAccess, Data.Win32.Kernel32.FileOpenFlags openOptions)
     {
         object[] funcargs =
-        {
+        [
             fileHandle, desiredAccess, objectAttributes, ioStatusBlock, shareAccess, openOptions
-        };
+        ];
 
         var retValue = (Data.Native.NTSTATUS)Generic.DynamicApiInvoke(@"ntdll.dll", @"NtOpenFile", typeof(Delegates.NtOpenFile), ref funcargs);
             

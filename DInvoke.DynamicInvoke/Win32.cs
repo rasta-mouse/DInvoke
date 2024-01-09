@@ -18,9 +18,9 @@ public static class Win32
     public static bool CloseHandle(IntPtr handle)
     {
         object[] funcargs =
-        {
+        [
             handle
-        };
+        ];
 
         var retVal = (bool)Generic.DynamicApiInvoke("kernel32.dll", "CloseHandle", typeof(Delegates.CloseHandle), ref funcargs);
 

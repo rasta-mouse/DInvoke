@@ -17,12 +17,12 @@ public static class Generic
     private delegate IntPtr ReadGs();
 
     private static byte[] _x64SyscallStub =
-    {
+    [
         0x49, 0x89, 0xCA,                // mov r10, rcx
         0xB8, 0x00, 0x00, 0x00, 0x00,    // mov eax, ssn
         0x0F, 0x05,                      // syscall
         0xC3                             // ret
-    };
+    ];
     
     /// <summary>
     /// Dynamically invoke an arbitrary function from a DLL, providing its name, function prototype, and arguments.
@@ -237,20 +237,20 @@ public static class Generic
         
         if (IntPtr.Size == 8)
         {
-            stub = new byte[]
-            {
+            stub =
+            [
                 0x65, 0x48, 0x8B, 0x04, 0x25, 0x60,     // mov rax, qword ptr gs:[0x60]
                 0x00, 0x00, 0x00,
                 0xc3                                    // ret
-            };
+            ];
         }
         else
         {
-            stub = new byte[]
-            {
+            stub =
+            [
                 0x64, 0xA1, 0x30, 0x00, 0x00, 0x00,     // mov eax,dword ptr fs:[30]
                 0xC3                                    // ret
-            };
+            ];
         }
 
         var parameters = Array.Empty<object>();

@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
-        <LangVersion>10</LangVersion>
+        <LangVersion>12</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>TheWover</Authors>
         <Description>Manually map PE modules from on disk or in memory.</Description>

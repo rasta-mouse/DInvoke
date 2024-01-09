@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
-        <LangVersion>10</LangVersion>
+        <LangVersion>12</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>TheWover</Authors>
         <Description>Dynamically invoke arbitrary unmanaged code from managed code without P/Invoke.</Description>
