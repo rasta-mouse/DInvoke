@@ -96,7 +96,7 @@ public static class Native
     {
         object[] parameters = [destinationString, sourceString];
 
-        Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+        Generic.DynamicApiInvoke<object>(
             NTDLL, 
             "RtlInitUnicodeString",
             typeof(RtlInitUnicodeStringDelegate),
@@ -127,7 +127,7 @@ public static class Native
     {
         object[] parameters = [destination, length];
 
-        _ = Generic.DynamicApiInvoke<Data.Native.NTSTATUS>(
+        _ = Generic.DynamicApiInvoke<object>(
             NTDLL, 
             "RtlZeroMemory",
             typeof(RtlZeroMemoryDelegate),

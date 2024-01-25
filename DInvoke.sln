@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DInvoke.Data", "DInvoke.Dat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DInvoke.ManualMap", "DInvoke.ManualMap\DInvoke.ManualMap.csproj", "{F71F41B0-56FE-4FA0-A4D9-1F9A9C31E09C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DInvoke.Tests", "DInvoke.Tests\DInvoke.Tests.csproj", "{4D7A58BC-CF93-4416-B095-7C83292B112A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{F71F41B0-56FE-4FA0-A4D9-1F9A9C31E09C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F71F41B0-56FE-4FA0-A4D9-1F9A9C31E09C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F71F41B0-56FE-4FA0-A4D9-1F9A9C31E09C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D7A58BC-CF93-4416-B095-7C83292B112A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D7A58BC-CF93-4416-B095-7C83292B112A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D7A58BC-CF93-4416-B095-7C83292B112A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D7A58BC-CF93-4416-B095-7C83292B112A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

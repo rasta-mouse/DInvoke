@@ -10,7 +10,7 @@
         <Description>Dynamically invoke arbitrary unmanaged code from managed code without P/Invoke.</Description>
         <AssemblyName>DInvoke.DynamicInvoke</AssemblyName>
         <RootNamespace>DInvoke.DynamicInvoke</RootNamespace>
-        <PackageVersion>1.0.6</PackageVersion>
+        <PackageVersion>1.0.7</PackageVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
